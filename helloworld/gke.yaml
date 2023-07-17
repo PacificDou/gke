@@ -1,0 +1,44 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "hello-world"
+  namespace: "default"
+  labels:
+    app: "hello-world"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "hello-world"
+  template:
+    metadata:
+      labels:
+        app: "hello-world"
+    spec:
+      containers:
+      - name: "hello-world"
+        image: "europe-west6-docker.pkg.dev/object-detection-392116/gke-study-repo/helloworld:47b163f"
+        env:
+        - name: "PORT"
+          value: "11280"
+        resources:
+          requests:
+            cpu: 500m
+            ephemeral-storage: 10Gi
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-world
+  name: hello-world-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 11280
+  selector:
+    app: hello-world
+  type: LoadBalancer
